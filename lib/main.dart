@@ -64,13 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  String _lastReqUrl;
+
   NavigationDecision navigationDelegateTrampoline(NavigationRequest req) {
-    if (!req.isForMainFrame) {
+    if (!req.isForMainFrame || _lastReqUrl == req.url) {
+      _lastReqUrl = null;
       return NavigationDecision.navigate;
     }
 
     Future.microtask(() async {
       final url = await navigationDelegate(req.url);
+      _lastReqUrl = url;
       if (url != null) {
         _controller.loadUrl(url);
       }
